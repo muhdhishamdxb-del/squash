@@ -714,12 +714,6 @@
     <aside class="panel">
       <div class="panel-head">⚙ Settings</div>
       <div class="panel-body">
-
-       <!--   <div class="field">
-          <div class="field-label">Quality <span class="val" id="qualityVal">82%</span></div>
-          <input type="range" id="quality" min="1" max="100" value="82">
-        </div> -->
-
         <div class="field">
           <div class="field-label" style="margin-bottom:0.4rem">Output Format</div>
           <div class="seg-group">
@@ -904,11 +898,9 @@ function fmtBytes(b) {
 
 function uid() { return Math.random().toString(36).slice(2); }
 
-// ── quality slider ────────────────────────────────────────
-const qualSlider = $('quality');
-qualSlider.addEventListener('input', () => {
-  $('qualityVal').textContent = qualSlider.value + '%';
-});
+// ── compression quality default ───────────────────────────
+// Quality control was removed from the UI, so normal compression uses this default.
+const DEFAULT_QUALITY = 82;
 
 const scalePctSlider = $('scalePct');
 scalePctSlider.addEventListener('input', () => {
@@ -953,9 +945,6 @@ function getTargetBytes() {
 function updateTargetUI() {
   const active = getTargetBytes() > 0;
   $('targetActiveNote').style.display = active ? 'flex' : 'none';
-  qualSlider.style.opacity = active ? '0.35' : '1';
-  qualSlider.style.pointerEvents = active ? 'none' : '';
-  $('qualityVal').style.opacity = active ? '0.35' : '1';
 }
 
 $('customTargetVal').addEventListener('input', updateTargetUI);
@@ -1163,7 +1152,7 @@ async function searchScale(img, mime, targetBytes, scaleMax) {
 async function smartCompress(img, baseW, baseH, mime, targetBytes) {
   // No target: just use quality slider
   if (!targetBytes) {
-    const q = parseInt(qualSlider.value) / 100;
+    const q = DEFAULT_QUALITY / 100;
     const c = makeCanvas(img, 1, mime);
     return { blob: await blobAtQuality(c, mime, q), scale: 1 };
   }
